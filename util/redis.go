@@ -154,5 +154,6 @@ func ZRevRank(key string, member string) int64 {
 	if err != nil {
 		panic(err)
 	}
+	
 	return rank
 }
