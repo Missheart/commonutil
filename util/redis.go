@@ -154,6 +154,18 @@ func ZRevRank(key string, member string) int64 {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return rank
+}
+
+// 获取某个元素的分数
+func ZScore(key string, member string) float64 {
+	ctx, cancelFunc := getRedisContext()
+	defer cancelFunc()
+	score, err := RedisClient.ZScore(ctx, key, member).Result()
+	if err != nil {
+		panic(err)
+	}
+
+	return score
 }
