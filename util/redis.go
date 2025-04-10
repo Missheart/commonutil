@@ -12,7 +12,7 @@ import (
 /*
 * 全局操作Redis操作客户端
  */
-var redisClient *redis.Client
+var RedisClient *redis.Client
 
 /*
 * 初始化redis连接
@@ -20,12 +20,12 @@ var redisClient *redis.Client
 func InitRedisConnect(config *redis.Options) {
 	log.Println("【Redis】开始初始化Redis，检查配置项：", config)
 
-	redisClient = redis.NewClient(config)
+	RedisClient = redis.NewClient(config)
 
 	ctx, cancelFunc := getRedisContext()
 	defer cancelFunc()
 
-	_, err2 := redisClient.Ping(ctx).Result()
+	_, err2 := RedisClient.Ping(ctx).Result()
 	if err2 != nil {
 		panic("redis 连接失败")
 	}
@@ -38,7 +38,7 @@ func InitRedisConnect(config *redis.Options) {
 func Get(key string) string {
 	ctx, cancelFunc := getRedisContext()
 	defer cancelFunc()
-	do, err := redisClient.Get(ctx, key).Result()
+	do, err := RedisClient.Get(ctx, key).Result()
 	checkIsRedisNilErr(err)
 	return do
 }
@@ -49,7 +49,7 @@ func Get(key string) string {
 func Set(key string, value string) {
 	ctx, cancelFunc := getRedisContext()
 	defer cancelFunc()
-	_, err := redisClient.Set(ctx, key, value, 0).Result()
+	_, err := RedisClient.Set(ctx, key, value, 0).Result()
 	checkIsRedisNilErr(err)
 }
 
@@ -59,7 +59,7 @@ func Set(key string, value string) {
 func Del(key string) {
 	ctx, cancelFunc := getRedisContext()
 	defer cancelFunc()
-	_, err := redisClient.Del(ctx, key).Result()
+	_, err := RedisClient.Del(ctx, key).Result()
 	checkIsRedisNilErr(err)
 }
 
@@ -69,7 +69,7 @@ func Del(key string) {
 func HGet(key string, field string) string {
 	ctx, cancelFunc := getRedisContext()
 	defer cancelFunc()
-	do, err := redisClient.HGet(ctx, key, field).Result()
+	do, err := RedisClient.HGet(ctx, key, field).Result()
 	checkIsRedisNilErr(err)
 	return do
 }
@@ -80,7 +80,7 @@ func HGet(key string, field string) string {
 func HSet(key string, field string, value string) {
 	ctx, cancelFunc := getRedisContext()
 	defer cancelFunc()
-	_, err := redisClient.HSet(ctx, key, field, value).Result()
+	_, err := RedisClient.HSet(ctx, key, field, value).Result()
 	checkIsRedisNilErr(err)
 }
 
@@ -90,7 +90,7 @@ func HSet(key string, field string, value string) {
 func Expired(key string, timeout time.Duration) {
 	ctx, cancelFunc := getRedisContext()
 	defer cancelFunc()
-	_, err := redisClient.Expire(ctx, key, timeout).Result()
+	_, err := RedisClient.Expire(ctx, key, timeout).Result()
 	checkIsRedisNilErr(err)
 }
 
@@ -116,7 +116,7 @@ func getRedisContext() (context.Context, context.CancelFunc) {
 func ZAdd(key string, score float64, member string) {
 	ctx, cancelFunc := getRedisContext()
 	defer cancelFunc()
-	err := redisClient.ZAdd(ctx, key, &redis.Z{Score: score, Member: member}).Err()
+	err := RedisClient.ZAdd(ctx, key, &redis.Z{Score: score, Member: member}).Err()
 	if err != nil {
 		panic(err)
 	}
@@ -129,7 +129,7 @@ func ZAdd(key string, score float64, member string) {
 func ZRevRange(key string, start int64, end int64) []string {
 	ctx, cancelFunc := getRedisContext()
 	defer cancelFunc()
-	members, err := redisClient.ZRevRange(ctx, key, start, end).Result()
+	members, err := RedisClient.ZRevRange(ctx, key, start, end).Result()
 	if err != nil {
 		panic(err)
 	}
@@ -140,8 +140,19 @@ func ZRevRange(key string, start int64, end int64) []string {
 func ZIncrBy(key string, member string) {
 	ctx, cancelFunc := getRedisContext()
 	defer cancelFunc()
-	err := redisClient.ZIncrBy(ctx, key, 1, member).Err()
+	err := RedisClient.ZIncrBy(ctx, key, 1, member).Err()
 	if err != nil {
 		panic(err)
 	}
+}
+
+// 获取某个成员的排名（倒序）
+func ZRevRank(key string, member string) int64 {
+	ctx, cancelFunc := getRedisContext()
+	defer cancelFunc()
+	rank, err := RedisClient.ZRevRank(ctx, key, member).Result()
+	if err != nil {
+		panic(err)
+	}
+	return rank
 }
