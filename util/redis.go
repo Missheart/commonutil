@@ -109,3 +109,39 @@ func checkIsRedisNilErr(err error) {
 func getRedisContext() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), 5*time.Second)
 }
+
+/**
+* 添加有序集合
+ */
+func ZAdd(key string, score float64, member string) {
+	ctx, cancelFunc := getRedisContext()
+	defer cancelFunc()
+	err := redisClient.ZAdd(ctx, key, &redis.Z{Score: score, Member: member}).Err()
+	if err != nil {
+		panic(err)
+	}
+}
+
+/*
+*
+按score倒序获取集合中第几到第几的元素
+*/
+func ZRevRange(key string, start int64, end int64) []string {
+	ctx, cancelFunc := getRedisContext()
+	defer cancelFunc()
+	members, err := redisClient.ZRevRange(ctx, key, start, end).Result()
+	if err != nil {
+		panic(err)
+	}
+	return members
+}
+
+// 使用ZIncrBy将成员分数加1
+func ZIncrBy(key string, member string) {
+	ctx, cancelFunc := getRedisContext()
+	defer cancelFunc()
+	err := redisClient.ZIncrBy(ctx, key, 1, member).Err()
+	if err != nil {
+		panic(err)
+	}
+}
