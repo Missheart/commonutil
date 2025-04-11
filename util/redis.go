@@ -169,3 +169,14 @@ func ZScore(key string, member string) float64 {
 
 	return score
 }
+
+// 将一个key的value自增
+func IncrBy(key string, value int64) int64 {
+	ctx, cancelFunc := getRedisContext()
+	defer cancelFunc()
+	result, err := RedisClient.IncrBy(ctx, key, value).Result()
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
