@@ -99,7 +99,7 @@ func Expired(key string, timeout time.Duration) {
  */
 func checkIsRedisNilErr(err error) {
 	if err != nil && !errors.Is(err, redis.Nil) {
-		panic("redis设置过期时间失败")
+		panic("redis设置失败")
 	}
 }
 
@@ -130,6 +130,20 @@ func ZRevRange(key string, start int64, end int64) []string {
 	ctx, cancelFunc := getRedisContext()
 	defer cancelFunc()
 	members, err := RedisClient.ZRevRange(ctx, key, start, end).Result()
+	if err != nil {
+		panic(err)
+	}
+	return members
+}
+
+/*
+*
+按score顺序获取集合中第几到第几的元素
+*/
+func ZRange(key string, start int64, end int64) []string {
+	ctx, cancelFunc := getRedisContext()
+	defer cancelFunc()
+	members, err := RedisClient.ZRange(ctx, key, start, end).Result()
 	if err != nil {
 		panic(err)
 	}
