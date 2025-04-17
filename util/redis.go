@@ -130,9 +130,7 @@ func ZRevRange(key string, start int64, end int64) []string {
 	ctx, cancelFunc := getRedisContext()
 	defer cancelFunc()
 	members, err := RedisClient.ZRevRange(ctx, key, start, end).Result()
-	if err != nil {
-		panic(err)
-	}
+	checkIsRedisNilErr(err)
 	return members
 }
 
@@ -144,9 +142,7 @@ func ZRange(key string, start int64, end int64) []string {
 	ctx, cancelFunc := getRedisContext()
 	defer cancelFunc()
 	members, err := RedisClient.ZRange(ctx, key, start, end).Result()
-	if err != nil {
-		panic(err)
-	}
+	checkIsRedisNilErr(err)
 	return members
 }
 
@@ -165,9 +161,7 @@ func ZRevRank(key string, member string) int64 {
 	ctx, cancelFunc := getRedisContext()
 	defer cancelFunc()
 	rank, err := RedisClient.ZRevRank(ctx, key, member).Result()
-	if err != nil {
-		panic(err)
-	}
+	checkIsRedisNilErr(err)
 
 	return rank
 }
@@ -177,9 +171,7 @@ func ZScore(key string, member string) float64 {
 	ctx, cancelFunc := getRedisContext()
 	defer cancelFunc()
 	score, err := RedisClient.ZScore(ctx, key, member).Result()
-	if err != nil {
-		panic(err)
-	}
+	checkIsRedisNilErr(err)
 
 	return score
 }
